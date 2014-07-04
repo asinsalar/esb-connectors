@@ -1,0 +1,6 @@
+{
+	"accessToken":"%s(accessToken)",
+	"domain":"%s(domain)",
+	"meta":"self,posts,comments",
+	"fields":"ID,name,URL,meta"
+}

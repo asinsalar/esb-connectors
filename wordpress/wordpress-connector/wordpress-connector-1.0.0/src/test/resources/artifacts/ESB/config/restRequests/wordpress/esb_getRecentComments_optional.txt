@@ -1,0 +1,7 @@
+{
+	"accessToken":"%s(accessToken)",
+	"domain":"%s(domain)",
+	"meta":"self,site,post",
+	"fields":"ID,post,author,meta",
+	"order":"DESC"
+}

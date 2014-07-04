@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template xmlns="http://ws.apache.org/ns/synapse" name="getBlogUsers">
+
+    <!--Optional Query Parameters-->
+    <parameter name="pretty" description="if true Output pretty JSON.default(false)"/>
+    <parameter name="meta" description="Loads data from the endpoints found in the 'meta' part of the response"/>
+    <parameter name="fields" description="Return only the specified fields"/>
+    <parameter name="number" description="Limit the total number of authors returned"/>
+    <parameter name="offset" description="The first n authors to be skipped in the returned result"/>
+    <parameter name="order" description="DESC or ASC"/>
+    <parameter name="order_by" description="The order field"/>
+    <parameter name="authors_only" description="Set to true to fetch authors only"/>
+
+    <sequence>
+
+        <!--Optional Query Parameters-->
+        <property name="uri.var.pretty" expression="$func:pretty" type="STRING"/>
+        <property name="uri.var.meta" expression="$func:meta" type="STRING"/>
+        <property name="uri.var.fields" expression="$func:fields" type="STRING"/>
+        <property name="uri.var.number" expression="$func:number" type="STRING"/>
+        <property name="uri.var.offset" expression="$func:offset" type="STRING"/>
+        <property name="uri.var.order" expression="$func:order" type="STRING"/>
+        <property name="uri.var.order_by" expression="$func:order_by" type="STRING"/>
+        <property name="uri.var.authors_only" expression="$func:authors_only" type="STRING"/>
+
+        <!--Building the query with optional query parameters-->
+
+        <filter
+                xpath="(not(get-property('uri.var.pretty') = '' or (not(string(get-property('uri.var.pretty'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'pretty=',get-property('uri.var.pretty'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.fields') = '' or (not(string(get-property('uri.var.fields'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'fields=',get-property('uri.var.fields'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.meta') = '' or (not(string(get-property('uri.var.meta'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'meta=',get-property('uri.var.meta'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.number') = '' or (not(string(get-property('uri.var.number'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'number=',get-property('uri.var.number'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.offset') = '' or (not(string(get-property('uri.var.offset'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'offset=',get-property('uri.var.offset'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.order') = '' or (not(string(get-property('uri.var.order'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'order=',get-property('uri.var.order'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.order_by') = '' or (not(string(get-property('uri.var.order_by'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'order_by=',get-property('uri.var.order_by'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.authors_only') = '' or (not(string(get-property('uri.var.authors_only'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'authors_only=',get-property('uri.var.authors_only'),'&amp;')" />
+            </then>
+        </filter>
+
+        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'),'/users')" type="STRING"/>
+
+
+        <call>
+            <endpoint>
+                <http method="GET" uri-template="{uri.var.wp_resource_uri}?{uri.var.queryParameters}" />
+            </endpoint>
+        </call>
+
+    </sequence>
+</template>

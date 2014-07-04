@@ -1,0 +1,5 @@
+proxyDirectoryRelativePath=/../src/test/resources/artifacts/ESB/config/proxies/googlecalendar/
+requestDirectoryRelativePath=/../src/test/resources/artifacts/ESB/config/restRequests/googlecalendar/
+apiUrl=https://www.googleapis.com
+accessToken=ya29.LgAe18rTOKoNgB8AAAChZ5yvJhclDvpFQzPuI9qM8SJDGJyqOadLkkGRIquhNA
+emailAddress=irshadhassan@gmail.com

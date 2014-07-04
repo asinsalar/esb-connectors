@@ -1,0 +1,6 @@
+{
+	"accessToken":"%s(accessToken)",
+	"domain":"%s(domain)",
+	"blog_to_follow":"jakegoldman.me",
+	"fields":"is_following"
+}

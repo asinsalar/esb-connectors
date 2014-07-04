@@ -1,0 +1,6 @@
+{
+	"accessToken":"%s(accessToken)",
+	"domain":"%s(domain)",
+	"comment_id":"%s(commentID)",
+	"content":"edit comment series"
+}

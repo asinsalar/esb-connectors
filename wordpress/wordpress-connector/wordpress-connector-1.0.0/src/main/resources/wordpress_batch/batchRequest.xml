@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template xmlns="http://ws.apache.org/ns/synapse" name="batchRequest">
+
+    <!--mandatory parameters-->
+    <parameter name="urls"/>
+
+    <!--optional parameters -Query parameters-->
+    <parameter name="http_envelope"/>
+    <parameter name="pretty"/>
+    <parameter name="meta"/>
+    <parameter name="fields"/>
+    <parameter name="callback"/>
+
+    <sequence>
+        
+
+
+        <property name="uri.var.http_envelope" expression="$func:http_envelope" scope="default" type="BOOLEAN"/>
+        <property name="uri.var.pretty" expression="$func:pretty" scope="default" type="BOOLEAN"/>
+        <property name="uri.var.meta" expression="$func:meta" scope="default" type="STRING"/>
+        <property name="uri.var.fields" expression="$func:fields" scope="default" type="STRING"/>
+        <property name="uri.var.callback" expression="$func:callback" scope="default" type="STRING"/>
+
+        <property name="uri.var.query" value="" scope="default" type="STRING"/>
+        <property name="uri.var.urls" expression="$func:urls"  scope="default" type="STRING"/>
+
+
+        <filter
+                xpath="not(get-property('uri.var.http_envelope') = '') and boolean(get-property('uri.var.http_envelope'))">
+            <then>
+                <property name="uri.var.query"
+                          expression="concat(get-property('uri.var.query'), '&amp;http_envelope=',get-property('uri.var.http_envelope')) " />
+            </then>
+        </filter>
+
+        <filter
+                xpath="not(get-property('uri.var.pretty') = '') and boolean(get-property('uri.var.pretty'))">
+            <then>
+                <property name="uri.var.query"
+                          expression="concat(get-property('uri.var.query'), '&amp;pretty=',get-property('uri.var.pretty')) " />
+            </then>
+        </filter>>
+
+        <filter
+                xpath="not(get-property('uri.var.meta') = '') and string(get-property('uri.var.meta'))">
+            <then>
+                <property name="uri.var.query"
+                          expression="concat(get-property('uri.var.query'), '&amp;meta=',get-property('uri.var.meta')) " />
+            </then>
+        </filter>
+
+        <filter
+                xpath="not(get-property('uri.var.fields') = '') and string(get-property('uri.var.fields'))">
+            <then>
+                <property name="uri.var.query"
+                          expression="concat(get-property('uri.var.query'), '&amp;fields=',get-property('uri.var.fields')) " />
+            </then>
+        </filter>
+
+        <filter
+                xpath="not(get-property('uri.var.callback') = '') and string(get-property('uri.var.callback'))">
+            <then>
+                <property name="uri.var.query"
+                          expression="concat(get-property('uri.var.query'), '&amp;callback=',get-property('uri.var.callback')) " />
+            </then>
+        </filter>
+
+
+        <property name="uri.var.wp_api_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/batch','?', get-property('uri.var.urls'), get-property('uri.var.query'))" scope="default" type="STRING"/>
+        
+
+        <call>
+            <endpoint>
+                <http method="GET" uri-template="{uri.var.wp_api_uri}" />
+            </endpoint>
+        </call>
+    </sequence>
+</template>
