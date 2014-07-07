@@ -1882,4 +1882,73 @@ public class WordpressConnectorIntegrationTest extends ConnectorIntegrationTestB
 
     }
 
+    /**
+     * Positive test case for batchRequest with mandatory parameters
+     *
+     */
+    @Test(groups={"wso2.esb"},description = "wordpress {batchRequest} integration test with mandatory parameters")
+    public void testBatchRequestWithMandatoryParameters() throws Exception {
+        esbRequestHeadersMap.put("Action", "urn:batchRequest");
+        RestResponse<JSONObject> esbRestResponse = sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap, "esb_batchRequest_mandatory.txt");
+
+        String apiEndPoint = "https://public-api.wordpress.com/rest/v1/batch"
+                +"?urls[]=/sites/"+connectorProperties.getProperty("domain")+"&urls[]=/read/following";
+
+        RestResponse<JSONObject> apiRestResponse = sendJsonRestRequest(apiEndPoint, "GET", apiRequestHeadersMap);
+
+        String siteEndPoint="/sites/"+connectorProperties.getProperty("domain");
+        Assert.assertEquals
+                (esbRestResponse.getBody().getJSONObject("/read/following").getJSONArray("posts").getJSONObject(0).get("title"),
+                        apiRestResponse.getBody().getJSONObject("/read/following").getJSONArray("posts").getJSONObject(0).get("title"));
+        Assert.assertEquals(esbRestResponse.getBody().getJSONObject(siteEndPoint).get("URL"),
+                apiRestResponse.getBody().getJSONObject(siteEndPoint).get("URL"));
+
+    }
+
+    /**
+     * Positive test case for batchRequest with optional parameters
+     */
+    @Test(groups={"wso2.esb"},description = "wordpress {batchRequest} integration test with optional parameters")
+    public void testBatchRequestWithOptionalParameters() throws Exception {
+        esbRequestHeadersMap.put("Action", "urn:batchRequest");
+        RestResponse<JSONObject> esbRestResponse = sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap, "esb_batchRequest_optional.txt");
+
+        String apiEndPoint = "https://public-api.wordpress.com/rest/v1/batch"
+                +"?urls[]=/sites/"+connectorProperties.getProperty("domain")+"&urls[]=/read/following"
+                +"&meta=self,posts";
+
+        RestResponse<JSONObject> apiRestResponse = sendJsonRestRequest(apiEndPoint, "GET", apiRequestHeadersMap);
+
+        String siteEndPoint="/sites/"+connectorProperties.getProperty("domain");
+
+        Assert.assertEquals(esbRestResponse.getBody().getJSONObject(siteEndPoint).getJSONObject("meta").getJSONObject("data").getJSONObject("self").get("ID"),
+                apiRestResponse.getBody().getJSONObject(siteEndPoint).getJSONObject("meta").getJSONObject("data").getJSONObject("self").get("ID"));
+
+    }
+
+
+    /**
+     * Negative test case for batchRequest method
+     */
+    @Test(groups={"wso2.esb"},description = "wordpress {batchRequest} integration test with negative case")
+    public void testBatchRequestWithNegativeCase() throws Exception {
+        esbRequestHeadersMap.put("Action", "urn:batchRequest");
+        RestResponse<JSONObject> esbRestResponse = sendJsonRestRequest(proxyUrl, "POST", esbRequestHeadersMap, "esb_batchRequest_negative.txt");
+
+        String apiEndPoint = "https://public-api.wordpress.com/rest/v1/batch?"
+                +"&urls[]=/sites/non-exist.wordpress.com"
+                +"&meta=self,posts";
+
+        RestResponse<JSONObject> apiRestResponse = sendJsonRestRequest(apiEndPoint, "GET", apiRequestHeadersMap);
+
+
+        Assert.assertEquals(esbRestResponse.getBody().getJSONObject("/sites/non-exist.wordpress.com").get("status_code"),
+                apiRestResponse.getBody().getJSONObject("/sites/non-exist.wordpress.com").get("status_code"));
+
+
+        Assert.assertEquals(esbRestResponse.getBody().getJSONObject("/sites/non-exist.wordpress.com").get("status_code"),404);
+        Assert.assertEquals(apiRestResponse.getBody().getJSONObject("/sites/non-exist.wordpress.com").get("status_code"),404);
+
+    }
+
 }
