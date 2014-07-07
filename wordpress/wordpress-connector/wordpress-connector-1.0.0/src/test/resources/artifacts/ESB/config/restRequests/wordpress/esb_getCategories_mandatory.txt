@@ -1,4 +1,4 @@
 {
 	"accessToken":"%s(accessToken)",
-	"domain":"%s(domain)"
+	"site":"%s(domain)"
 }

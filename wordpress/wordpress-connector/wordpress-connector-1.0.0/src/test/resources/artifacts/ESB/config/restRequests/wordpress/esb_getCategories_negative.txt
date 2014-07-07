@@ -1,4 +1,4 @@
 {
 	"accessToken":"%s(accessToken)",
-	"domain":"imirshadhassan.com"
+	"site":"imirshadhassan.com"
 }

@@ -1,5 +1,5 @@
 {
 	"accessToken":"%s(accessToken)",
-	"domain":"%s(domain)",
+	"site":"%s(domain)",
 	"fields":"ID,date,URL"
 }

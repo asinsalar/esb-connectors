@@ -1,7 +1,7 @@
 {
 	"accessToken":"%s(accessToken)",
-	"domain":"%s(domain)",
-	"postID":"%s(postId)",
+	"site":"%s(domain)",
+	"post_id":"%s(postId)",
 	"content":"optional comment series",
 	"meta":"self,post"
 }

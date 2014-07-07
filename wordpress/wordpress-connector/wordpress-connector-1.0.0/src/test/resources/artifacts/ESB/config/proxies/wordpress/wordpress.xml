@@ -12,7 +12,11 @@
 			<property name="accessToken" expression="json-eval($.accessToken)"/>
             <property name="domain" expression="json-eval($.domain)"/>
 
+            <!--site id or domain needed for createComment methods-->
+            <property name="site" expression="json-eval($.site)"/>
+
             <!--Query Parameters (common to All)-->
+            <property name="http_envelope" expression="json-eval($.http_envelope)"/>
             <property name="pretty" expression="json-eval($.pretty)"/>
             <property name="meta" expression="json-eval($.meta)"/>
             <property name="fields" expression="json-eval($.fields)"/>
@@ -28,10 +32,10 @@
             <property name="title" expression="json-eval($.title)"/>
 
             <!--Mandatory Parameter for editPost,getPostById,createComment methods-->
-            <property name="postID" expression="json-eval($.postID)"/>
+            <property name="post_id" expression="json-eval($.post_id)"/>
 
             <!--Mandatory Parameter for getPostBySlug methods-->
-            <property name="postSlug" expression="json-eval($.postSlug)"/>
+            <property name="post_slug" expression="json-eval($.post_slug)"/>
 
             <!--Optional Request Parameters for createPost,editPost methods-->
             <property name="date" expression="json-eval($.date)"/>
@@ -55,29 +59,23 @@
             <property name="sharing_enabled" expression="json-eval($.sharing_enabled)"/>
             <property name="gplusauthorship_enabled" expression="json-eval($.gplusauthorship_enabled)"/>
 
-            <property name="tag" expression="json-eval($.tag)"/>
-            <property name="name" expression="json-eval($.name)"/>
-            <property name="description" expression="json-eval($.description)"/>
-            <property name="parent" expression="json-eval($.parent)"/>
-
-            <property name="new_name" expression="json-eval($.new_name)"/>
-            <property name="category" expression="json-eval($.category)"/>
-
-            <property name="blog_to_follow" expression="json-eval($.blog_to_follow)"/>
-            <property name="blog_to_unFollow" expression="json-eval($.blog_to_unFollow)"/>
-
-            <property name="tag" expression="json-eval($.tag)"/>
-
+            <!--Mandatory Parameter for editComment,deleteComment methods-->
             <property name="comment_id" expression="json-eval($.comment_id)"/>
 
-            <property name="post_id" expression="json-eval($.post_id)"/>
-
+            <property name="search" expression="json-eval($.search)"/>
+            <property name="meta_key" expression="json-eval($.meta_key)"/>
+            <property name="meta_value" expression="json-eval($.meta_value)"/>
+            <property name="name" expression="json-eval($.name)"/>
+            <property name="description" expression="json-eval($.description)"/>
+            <property name="category" expression="json-eval($.category)"/>
+            <property name="tag" expression="json-eval($.tag)"/>
+            <property name="blog" expression="json-eval($.blog)"/>
             <property name="urls" expression="json-eval($.urls)"/>
-
             <property name="note_id" expression="json-eval($.note_id)"/>
             <property name="num_note_items" expression="json-eval($.num_note_items)"/>
             <property name="unit" expression="json-eval($.unit)"/>
             <property name="quantity" expression="json-eval($.quantity)"/>
+            <property name="days" expression="json-eval($.days)"/>
 
             <wordpress.init>
                 <accessToken>{$ctx:accessToken}</accessToken>
@@ -87,6 +85,7 @@
 			<switch source="get-property('transport', 'Action')">
                 <case regex="urn:getBlogUsers">
                     <wordpress.getBlogUsers>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
                         <pretty>{$ctx:pretty}</pretty>
                         <fields>{$ctx:fields}</fields>
                         <meta>{$ctx:meta}</meta>
@@ -120,6 +119,7 @@
                         <likes_enabled>{$ctx:likes_enabled}</likes_enabled>
                         <sharing_enabled>{$ctx:sharing_enabled}</sharing_enabled>
                         <gplusauthorship_enabled>{$ctx:gplusauthorship_enabled}</gplusauthorship_enabled>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
                         <pretty>{$ctx:pretty}</pretty>
                         <meta>{$ctx:meta}</meta>
                         <fields>{$ctx:fields}</fields>
@@ -127,7 +127,7 @@
                 </case>
                 <case regex="urn:editPost">
                     <wordpress.editPost>
-                        <postID>{$ctx:post_id}</postID>
+                        <post_id>{$ctx:post_id}</post_id>
                         <date>{$ctx:date}</date>
                         <title>{$ctx:title}</title>
                         <content>{$ctx:content}</content>
@@ -149,119 +149,27 @@
                         <likes_enabled>{$ctx:likes_enabled}</likes_enabled>
                         <sharing_enabled>{$ctx:sharing_enabled}</sharing_enabled>
                         <gplusauthorship_enabled>{$ctx:gplusauthorship_enabled}</gplusauthorship_enabled>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
                         <pretty>{$ctx:pretty}</pretty>
                         <meta>{$ctx:meta}</meta>
                         <fields>{$ctx:fields}</fields>
                     </wordpress.editPost>
                 </case>
-                <case regex="urn:getPostById">
-                    <wordpress.getPostById>
-                        <postID>{$ctx:postID}</postID>
-                        <pretty>{$ctx:pretty}</pretty>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.getPostById>
-                </case>
-                <case regex="urn:getPostBySlug">
-                    <wordpress.getPostBySlug>
-                        <postSlug>{$ctx:postSlug}</postSlug>
-                        <pretty>{$ctx:pretty}</pretty>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.getPostBySlug>
-                </case>
-                <case regex="urn:insertCategory">
-                    <wordpress.insertCategory>
-                        <name>{$ctx:name}</name>
-                        <description>{$ctx:description}</description>
-                        <parent>{$ctx:parent}</parent>
-                        <meta>{$ctx:meta}</meta>
-                    </wordpress.insertCategory>
-                </case>
-                <case regex="urn:editCategory">
-                    <wordpress.editCategory>
-                        <name>{$ctx:name}</name>
-                        <new_name>{$ctx:new_name}</new_name>
-                        <description>{$ctx:description}</description>
-                        <parent>{$ctx:parent}</parent>
-                    </wordpress.editCategory>
-                </case>
-                <case regex="urn:insertTag">
-                    <wordpress.insertTag>
-                        <name>{$ctx:name}</name>
-                        <description>{$ctx:description}</description>
-                    </wordpress.insertTag>
-                </case>
-                <case regex="urn:editTag">
-                    <wordpress.editTag>
-                        <tag>{$ctx:tag}</tag>
-                        <name>{$ctx:name}</name>
-                        <description>{$ctx:description}</description>
-                    </wordpress.editTag>
-                </case>
-                <case regex="urn:getCategories">
-                    <wordpress.getCategories>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.getCategories>
-                </case>
-                <case regex="urn:getTags">
-                    <wordpress.getTags>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.getTags>
-                </case>
-                <case regex="urn:deleteCategory">
-                    <wordpress.deleteCategory>
-                        <category>{$ctx:category}</category>
-                    </wordpress.deleteCategory>
-                </case>
-                <case regex="urn:deleteTag">
-                    <wordpress.deleteTag>
-                        <tag>{$ctx:tag}</tag>
-                    </wordpress.deleteTag>
-                </case>
-                <case regex="urn:getFollowers">
-                    <wordpress.getFollowers>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.getFollowers>
-                </case>
-                <case regex="urn:followBlog">
-                    <wordpress.followBlog>
-                        <blog_to_follow>{$ctx:blog_to_follow}</blog_to_follow>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.followBlog>
-                </case>
-                <case regex="urn:unFollowBlog">
-                    <wordpress.unFollowBlog>
-                        <blog_to_unFollow>{$ctx:blog_to_unFollow}</blog_to_unFollow>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.unFollowBlog>
-                </case>
-                <case regex="urn:getPosts">
-                    <wordpress.getPosts>
-                        <fields>{$ctx:fields}</fields>
-                        <meta>{$ctx:meta}</meta>
-                    </wordpress.getPosts>
-                </case>
-                <case regex="urn:getLikesForPost">
-                    <wordpress.getLikesForPost>
+                <case regex="urn:deletePost">
+                    <wordpress.deletePost>
                         <post_id>{$ctx:post_id}</post_id>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.getLikesForPost>
-                </case>
-                <case regex="urn:getSiteInfo">
-                    <wordpress.getSiteInfo>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
                         <pretty>{$ctx:pretty}</pretty>
                         <meta>{$ctx:meta}</meta>
                         <fields>{$ctx:fields}</fields>
-                    </wordpress.getSiteInfo>
+                    </wordpress.deletePost>
                 </case>
                 <case regex="urn:createComment">
                     <wordpress.createComment>
-                        <postID>{$ctx:postID}</postID>
+                        <site>{$ctx:site}</site>
+                        <post_id>{$ctx:post_id}</post_id>
                         <content>{$ctx:content}</content>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
                         <pretty>{$ctx:pretty}</pretty>
                         <meta>{$ctx:meta}</meta>
                         <fields>{$ctx:fields}</fields>
@@ -273,16 +181,21 @@
                         <content>{$ctx:content}</content>
                         <date>{$ctx:date}</date>
                         <status>{$ctx:status}</status>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
                         <meta>{$ctx:meta}</meta>
                         <fields>{$ctx:fields}</fields>
                     </wordpress.editComment>
                 </case>
                 <case regex="urn:getComments">
                     <wordpress.getComments>
+                        <site>{$ctx:site}</site>
                         <post_id>{$ctx:post_id}</post_id>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
                         <meta>{$ctx:meta}</meta>
                         <fields>{$ctx:fields}</fields>
-                        <number>{}$ctx:number</number>
+                        <number>{$ctx:number</number>
                         <offset>{$ctx:offset}</offset>
                         <page>{$ctx:page}</page>
                         <order>{$ctx:order}</order>
@@ -294,9 +207,12 @@
                 </case>
                 <case regex="urn:getRecentComments">
                     <wordpress.getRecentComments>
+                        <site>{$ctx:site}</site>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
                         <meta>{$ctx:meta}</meta>
                         <fields>{$ctx:fields}</fields>
-                        <number>{}$ctx:number</number>
+                        <number>{$ctx:number}</number>
                         <offset>{$ctx:offset}</offset>
                         <page>{$ctx:page}</page>
                         <order>{$ctx:order}</order>
@@ -309,9 +225,263 @@
                 <case regex="urn:deleteComment">
                     <wordpress.deleteComment>
                         <comment_id>{$ctx:comment_id}</comment_id>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
                         <meta>{$ctx:meta}</meta>
                         <fields>{$ctx:fields}</fields>
                     </wordpress.deleteComment>
+                </case>
+                <case regex="urn:likePost">
+                    <wordpress.likePost>
+                        <site>{$ctx:site}</site>
+                        <post_id>{$ctx:post_id}</post_id>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.likePost>
+                </case>
+                <case regex="urn:getLikesForPost">
+                    <wordpress.getLikesForPost>
+                        <site>{$ctx:site}</site>
+                        <post_id>{$ctx:post_id}</post_id>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.getLikesForPost>
+                </case>
+                <case regex="urn:getPostById">
+                    <wordpress.getPostById>
+                        <site>{$ctx:site}</site>
+                        <post_id>{$ctx:post_id}</post_id>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.getPostById>
+                </case>
+                <case regex="urn:getPostBySlug">
+                    <wordpress.getPostBySlug>
+                        <site>{$ctx:site}</site>
+                        <post_slug>{$ctx:post_slug}</post_slug>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.getPostBySlug>
+                </case>
+                <case regex="urn:getPosts">
+                    <wordpress.getPosts>
+                        <site>{$ctx:site}</site>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                        <number>{$ctx:number</number>
+                        <offset>{$ctx:offset}</offset>
+                        <page>{$ctx:page}</page>
+                        <order>{$ctx:order}</order>
+                        <order_by>{$ctx:order_by}</order_by>
+                        <after>{$ctx:after}</after>
+                        <before>{$ctx:before}</before>
+                        <category>{$ctx:category}</category>
+                        <tag>{$ctx:tag}</tag>
+                        <type>{$ctx:type}</type>
+                        <status>{$ctx:status}</status>
+                        <sticky>{$ctx:sticky}</sticky>
+                        <author>{$ctx:author}</author>
+                        <search>{$ctx:search}</search>
+                        <meta_key>{$ctx:meta_key}</meta_key>
+                        <meta_value>{$ctx:meta_value}</meta_value>
+                    </wordpress.getPosts>
+                </case>
+                <case regex="urn:insertCategory">
+                    <wordpress.insertCategory>
+                        <name>{$ctx:name}</name>
+                        <description>{$ctx:description}</description>
+                        <parent>{$ctx:parent}</parent>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.insertCategory>
+                </case>
+                <case regex="urn:editCategory">
+                    <wordpress.editCategory>
+                        <category>{$ctx:category}</category>
+                        <name>{$ctx:name}</name>
+                        <description>{$ctx:description}</description>
+                        <parent>{$ctx:parent}</parent>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.editCategory>
+                </case>
+                <case regex="urn:getCategories">
+                    <wordpress.getCategories>
+                        <site>{$ctx:site}</site>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.getCategories>
+                </case>
+                <case regex="urn:deleteCategory">
+                    <wordpress.deleteCategory>
+                        <category>{$ctx:category}</category>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.deleteCategory>
+                </case>
+                <case regex="urn:insertTag">
+                    <wordpress.insertTag>
+                        <name>{$ctx:name}</name>
+                        <description>{$ctx:description}</description>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.insertTag>
+                </case>
+                <case regex="urn:editTag">
+                    <wordpress.editTag>
+                        <tag>{$ctx:tag}</tag>
+                        <name>{$ctx:name}</name>
+                        <description>{$ctx:description}</description>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.editTag>
+                </case>
+                <case regex="urn:subscribeTag">
+                    <wordpress.subscribeTag>
+                        <tag>{$ctx:tag}</tag>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.subscribeTag>
+                </case>
+                <case regex="urn:unsubscribeTag">
+                    <wordpress.unsubscribeTag>
+                        <tag>{$ctx:tag}</tag>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.unsubscribeTag>
+                </case>
+                <case regex="urn:getTags">
+                    <wordpress.getTags>
+                        <site>{$ctx:site}</site>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.getTags>
+                </case>
+                <case regex="urn:deleteTag">
+                    <wordpress.deleteTag>
+                        <tag>{$ctx:tag}</tag>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.deleteTag>
+                </case>
+                <case regex="urn:getFollowingBlogPosts">
+                    <wordpress.getFollowingBlogPosts>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                        <number>{$ctx:number}</number>
+                        <page>{$ctx:page}</page>
+                        <order>{$ctx:order}</order>
+                        <after>{$ctx:after}</after>
+                        <before>{$ctx:before}</before>
+                    </wordpress.getFollowingBlogPosts>
+                </case>
+                <case regex="urn:followBlog">
+                    <wordpress.followBlog>
+                        <blog>{$ctx:blog}</blog>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.followBlog>
+                </case>
+                <case regex="urn:unFollowBlog">
+                    <wordpress.unFollowBlog>
+                        <blog>{$ctx:blog}</blog>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.unFollowBlog>
+                </case>
+                <case regex="urn:getFollowers">
+                    <wordpress.getFollowers>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                        <number>{$ctx:number</number>
+                        <page>{$ctx:page}</page>
+                    </wordpress.getFollowers>
+                </case>
+                <case regex="urn:getSiteInfo">
+                    <wordpress.getSiteInfo>
+                        <site>{$ctx:site}</site>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.getSiteInfo>
+                </case>
+                <case regex="urn:getStats">
+                    <wordpress.getStats>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                    </wordpress.getStats>
+                </case>
+                <case regex="urn:getVisitorsCount">
+                    <wordpress.getVisitorsCount>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                        <unit>{$ctx:unit}</unit>
+                        <quantity>{$ctx:quantity}</quantity>
+                        <date>{$ctx:date}</date>
+                    </wordpress.getVisitorsCount>
+                </case>
+                <case regex="urn:getViewsByCountry">
+                    <wordpress.getViewsByCountry>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                        <date>{$ctx:date}</date>
+                        <days>{$ctx:days}</days>
+                    </wordpress.getViewsByCountry>
+                </case>
+                <case regex="urn:getSearchTerms">
+                    <wordpress.getSearchTerms>
+                        <http_envelope>{$ctx:http_envelope}</http_envelope>
+                        <pretty>{$ctx:pretty}</pretty>
+                        <meta>{$ctx:meta}</meta>
+                        <fields>{$ctx:fields}</fields>
+                        <date>{$ctx:date}</date>
+                        <days>{$ctx:days}</days>
+                    </wordpress.getSearchTerms>
                 </case>
                 <case regex="urn:batchRequest">
                     <wordpress.batchRequest>
@@ -320,29 +490,6 @@
                         <fields>{$ctx:fields}</fields>
                     </wordpress.batchRequest>
                 </case>
-                <case regex="urn:getFollowingBlogPosts">
-                    <wordpress.getFollowingBlogPosts>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                        <number>{$ctx:number}</number>
-                        <page>{$ctx:page}</page>
-                        <order>{$ctx:order}</order>
-                    </wordpress.getFollowingBlogPosts>
-                </case>
-                <case regex="urn:subscribeTag">
-                    <wordpress.subscribeTag>
-                        <tag>{$ctx:tag}</tag>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.subscribeTag>
-                </case>
-                <case regex="urn:unsubscribeTag">
-                    <wordpress.unsubscribeTag>
-                        <tag>{$ctx:tag}</tag>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.unsubscribeTag>
-                </case>
                 <case regex="urn:getNotification">
                     <wordpress.getNotification>
                         <note_id>{$ctx:note_id}</note_id>
@@ -350,39 +497,6 @@
                         <num_note_items>{$ctx:num_note_items}</num_note_items>
                     </wordpress.getNotification>
                 </case>
-                <case regex="urn:getSearchTerms">
-                    <wordpress.getSearchTerms>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                        <date>{$ctx:date}</date>
-                        <days>{$ctx:days}</days>
-                    </wordpress.getSearchTerms>
-                </case>
-                <case regex="urn:getStats">
-                    <wordpress.getStats>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                    </wordpress.getStats>
-                </case>
-                <case regex="urn:getViewsByCountry">
-                    <wordpress.getViewsByCountry>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                        <date>{$ctx:date}</date>
-                        <days>{$ctx:days}</days>
-                    </wordpress.getViewsByCountry>
-                </case>
-                <case regex="urn:getVisitorsCount">
-                    <wordpress.getVisitorsCount>
-                        <meta>{$ctx:meta}</meta>
-                        <fields>{$ctx:fields}</fields>
-                        <unit>{$ctx:unit}</unit>
-                        <quantity>{$ctx:quantity}</quantity>
-                        <date>{$ctx:date}</date>
-                    </wordpress.getVisitorsCount>
-                </case>
-
-
             </switch>
 			<respond/>
 		</inSequence>

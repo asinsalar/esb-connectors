@@ -9,6 +9,10 @@
             <file>editPost.xml</file>
             <description>edit a existing post </description>
         </component>
+        <component name="deletePost">
+            <file>deletePost.xml</file>
+            <description>delete a post </description>
+        </component>
         <component name="getPostById">
             <file>getPostById.xml</file>
             <description>Return a single Post with post id </description>
@@ -20,6 +24,10 @@
         <component name="getPosts">
             <file>getPosts.xml</file>
             <description>Return matching posts </description>
+        </component>
+        <component name="likePost">
+            <file>likePost.xml</file>
+            <description>hit like for a post </description>
         </component>
         <component name="getLikesForPost">
             <file>getLikesForPost.xml</file>

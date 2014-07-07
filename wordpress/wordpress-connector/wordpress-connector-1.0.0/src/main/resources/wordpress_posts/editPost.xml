@@ -2,7 +2,7 @@
 <template xmlns="http://ws.apache.org/ns/synapse" name="editPost">
 
     <!--Mandatory Parameter-->
-    <parameter name="postID" description="The post ID to edit"/>
+    <parameter name="post_id" description="The post ID to edit"/>
     <parameter name="title" description="The post title (html)"/>
 
     <!--Optional Request Parameters-->
@@ -28,12 +28,13 @@
     <parameter name="gplusauthorship_enabled" description="Should a Google+ account be associated with this post? Defaults to true"/>
 
     <!--Optional Query Parameters-->
+    <parameter name="http_envelope" description="Set HTTP status code to always be 200. The JSON response is wrapped in an 'envelope' containing the 'real' HTTP status code and headers.default(false)"/>
     <parameter name="pretty" description="if true Output pretty JSON.default(false)"/>
     <parameter name="meta" description="Loads data from the endpoints found in the 'meta' part of the response"/>
     <parameter name="fields" description="Return only the specified fields"/>
 
     <sequence>
-        <property name="uri.var.postID" expression="$func:postID" />
+        <property name="uri.var.post_id" expression="$func:post_id" />
         <property name="uri.var.date" expression="$func:date" />
         <property name="uri.var.title" expression="$func:title" />
         <property name="uri.var.content" expression="$func:content" />
@@ -63,9 +64,18 @@
         </filter>
 
         <!--Optional Query Parameters-->
+        <property name="uri.var.http_envelope" expression="$func:http_envelope"/>
         <property name="uri.var.pretty" expression="$func:pretty" />
         <property name="uri.var.meta" expression="$func:meta" />
         <property name="uri.var.fields" expression="$func:fields" />
+
+        <filter
+                xpath="(not(get-property('uri.var.http_envelope') = '' or (not(boolean(get-property('uri.var.http_envelope'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'http_envelope=',get-property('uri.var.http_envelope'),'&amp;')" />
+            </then>
+        </filter>
 
         <filter
                 xpath="(not(get-property('uri.var.pretty') = '' or (not(boolean(get-property('uri.var.pretty'))))))">
@@ -219,13 +229,17 @@
 
         <property name="messageType" scope="axis2" value="application/x-www-form-urlencoded" />
 
-        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'),'/posts/',get-property('postID'))" />
+        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'),'/posts/',get-property('post_id'))" />
 
         <call>
             <endpoint>
                 <http method="POST" uri-template="{uri.var.wp_resource_uri}?{uri.var.queryParameters}" />
             </endpoint>
         </call>
+
+        <!-- Remove response's custom header information -->
+        <header name="X-Prefork" scope="transport" action="remove" />
+        <header name="X-hacker" scope="transport" action="remove" />
 
     </sequence>
 </template>

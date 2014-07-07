@@ -1,5 +1,5 @@
 {
 	"accessToken":"%s(accessToken)",
-	"tag":"%s(tag)",
+	"tag":"%s(tagSlugMandatory)",
 	"fields":"subscribed"
 }

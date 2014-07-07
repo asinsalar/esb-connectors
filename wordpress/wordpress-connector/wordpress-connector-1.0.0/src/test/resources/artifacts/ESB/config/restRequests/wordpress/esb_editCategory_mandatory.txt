@@ -1,6 +1,6 @@
 {
 	"accessToken":"%s(accessToken)",
 	"domain":"%s(domain)",
-	"name":"%s(name)",
-	"new_name":"IntegrationTestMandatoryEdited"
+	"category":"%s(categoryMandatory)",
+	"name":"IntegrationTestMandatoryEdited"
 }

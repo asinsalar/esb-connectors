@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<template xmlns="http://ws.apache.org/ns/synapse" name="insertTag">
-
+<template xmlns="http://ws.apache.org/ns/synapse" name="likePost">
     <!--Mandatory Parameter-->
-    <parameter name="name" description="The category name"/>
-
-    <!--Optional Body Parameters-->
-    <parameter name="description" description="The category description"/>
+    <parameter name="site" description="The site ID or The site domain to like the post"/>
+    <parameter name="post_id" description="The post ID to like"/>
 
     <!--optional Query parameters-->
     <parameter name="http_envelope" description="Set HTTP status code to always be 200. The JSON response is wrapped in an 'envelope' containing the 'real' HTTP status code and headers.default(false)"/>
@@ -14,18 +11,16 @@
     <parameter name="fields" description="Return only the specified fields"/>
 
     <sequence>
-        <!--Mandatory Parameter-->
-        <property name="uri.var.name" expression="$func:name" />
 
-        <!--Optional body Parameters-->
-        <property name="uri.var.description" expression="$func:description" />
+        <!--Mandatory Parameter-->
+        <property name="uri.var.site" expression="$func:site"/>
+        <property name="uri.var.post_id" expression="$func:post_id"/>
 
         <!-- Building the URL with the query parameters -->
         <property name="uri.var.http_envelope" expression="$func:http_envelope"/>
         <property name="uri.var.pretty" expression="$func:pretty" />
         <property name="uri.var.meta" expression="$func:meta" />
         <property name="uri.var.fields" expression="$func:fields" />
-
 
         <filter
                 xpath="(not(get-property('uri.var.http_envelope') = '' or (not(boolean(get-property('uri.var.http_envelope'))))))">
@@ -59,39 +54,7 @@
             </then>
         </filter>
 
-        <!-- Building request with mandatory params -->
-        <payloadFactory media-type="json">
-            <format>
-                {
-                "name": "$1"
-                }
-            </format>
-            <args>
-                <arg expression="get-property('uri.var.name')" />
-            </args>
-        </payloadFactory>
-
-        <script language="js"><![CDATA[
-
-			var description=mc.getProperty('uri.var.description');
-
-			payload = mc.getPayloadJSON();
-
-
-			if(description != null && description != ""){
-
-				payload.description=description;
-
-			}
-
-
-
-           mc.setPayloadJSON(payload);
-         ]]></script>
-
-        <property name="messageType" scope="axis2" value="application/x-www-form-urlencoded" />
-
-        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'),'/tags/new')" />
+        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.site'),'/posts/',get-property('uri.var.post_id'),'/likes/new')" />
 
         <call>
             <endpoint>

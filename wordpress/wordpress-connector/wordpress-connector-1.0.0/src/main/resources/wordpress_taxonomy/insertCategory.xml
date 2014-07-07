@@ -1,21 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template xmlns="http://ws.apache.org/ns/synapse" name="insertCategory">
 
+    <!--Mandatory Parameter-->
     <parameter name="name" description="The category name"/>
+
+    <!--Optional Body Parameters-->
     <parameter name="description" description="The category description"/>
     <parameter name="parent" description="ID of the parent category"/>
 
-    <!-- Optional Parameters -->
+    <!--optional Query parameters-->
+    <parameter name="http_envelope" description="Set HTTP status code to always be 200. The JSON response is wrapped in an 'envelope' containing the 'real' HTTP status code and headers.default(false)"/>
+    <parameter name="pretty" description="if true Output pretty JSON.default(false)"/>
     <parameter name="meta" description="Loads data from the endpoints found in the 'meta' part of the response"/>
     <parameter name="fields" description="Return only the specified fields"/>
 
     <sequence>
-        <property name="uri.var.name" expression="$func:name" scope="default" type="STRING"/>
-        <property name="uri.var.description" expression="$func:description" scope="default" type="STRING"/>
-        <property name="uri.var.parent" expression="$func:parent" scope="default" type="STRING"/>
+        <!--Mandatory Parameter-->
+        <property name="uri.var.name" expression="$func:name" />
 
-        <property name="uri.var.meta" expression="$func:meta" scope="default" type="STRING"/>
-        <property name="uri.var.fields" expression="$func:fields" scope="default" type="STRING"/>
+        <!--Optional body Parameters-->
+        <property name="uri.var.description" expression="$func:description" />
+
+        <!--Optional body parameter with type integer -->
+        <filter source="boolean($func:parent)" regex="true">
+            <then>
+                <property name="uri.var.parent" expression="$func:parent" type="INTEGER" />
+            </then>
+        </filter>
+
+        <!-- Building the URL with the query parameters -->
+        <property name="uri.var.http_envelope" expression="$func:http_envelope"/>
+        <property name="uri.var.pretty" expression="$func:pretty" />
+        <property name="uri.var.meta" expression="$func:meta" />
+        <property name="uri.var.fields" expression="$func:fields" />
+
+
+        <filter
+                xpath="(not(get-property('uri.var.http_envelope') = '' or (not(boolean(get-property('uri.var.http_envelope'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'http_envelope=',get-property('uri.var.http_envelope'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.pretty') = '' or (not(boolean(get-property('uri.var.pretty'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'pretty=',get-property('uri.var.pretty'),'&amp;')" />
+            </then>
+        </filter>
 
         <filter
                 xpath="(not(get-property('uri.var.meta') = '' or (not(string(get-property('uri.var.meta'))))))">
@@ -33,27 +67,25 @@
             </then>
         </filter>
 
-        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'),'/categories/new')" scope="default" type="STRING"/>
-
+        <!-- Building request with mandatory params -->
         <payloadFactory media-type="json">
-            <format>{}</format>
+            <format>
+                {
+                "name": "$1"
+                }
+            </format>
+            <args>
+                <arg expression="get-property('uri.var.name')" />
+            </args>
         </payloadFactory>
 
         <script language="js"><![CDATA[
 
-			var name=mc.getProperty('uri.var.name');
 			var description=mc.getProperty('uri.var.description');
 			var parent=mc.getProperty('uri.var.parent');
 
-
-
 			payload = mc.getPayloadJSON();
 
-			if(name != null && name != ""){
-
-				payload.name = name;
-
-			}
 
 			if(description != null && description != ""){
 
@@ -73,13 +105,19 @@
            mc.setPayloadJSON(payload);
          ]]></script>
 
-        <property name="messageType" scope="axis2" value="application/json" />
+        <property name="messageType" scope="axis2" value="application/x-www-form-urlencoded" />
 
-         <call>
+        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'),'/categories/new')" />
+
+        <call>
             <endpoint>
                 <http method="POST" uri-template="{uri.var.wp_resource_uri}?{uri.var.queryParameters}" />
             </endpoint>
         </call>
+
+        <!-- Remove response's custom header information -->
+        <header name="X-Prefork" scope="transport" action="remove" />
+        <header name="X-hacker" scope="transport" action="remove" />
 
     </sequence>
 </template>

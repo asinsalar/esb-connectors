@@ -1,5 +1,5 @@
 {
 	"accessToken":"%s(accessToken)",
-	"domain":"%s(domain)",
-	"postID":"10000"
+	"site":"%s(domain)",
+	"post_id":"10000"
 }

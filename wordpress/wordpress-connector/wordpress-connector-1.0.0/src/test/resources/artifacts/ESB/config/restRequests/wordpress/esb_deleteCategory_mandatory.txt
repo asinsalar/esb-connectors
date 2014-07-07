@@ -1,5 +1,5 @@
 {
 	"accessToken":"%s(accessToken)",
 	"domain":"%s(domain)",
-	"category":"%s(category)"
+	"category":"%s(categoryMandatory)"
 }

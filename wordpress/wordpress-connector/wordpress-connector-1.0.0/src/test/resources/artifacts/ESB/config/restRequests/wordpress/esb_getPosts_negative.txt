@@ -1,4 +1,4 @@
 {
 	"accessToken":"%s(accessToken)",
-	"domain":"google.lk"
+	"site":"google.lk"
 }

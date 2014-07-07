@@ -27,6 +27,7 @@
     <parameter name="gplusauthorship_enabled" description="Should a Google+ account be associated with this post? Defaults to true"/>
 
     <!--Optional Query Parameters-->
+    <parameter name="http_envelope" description="Set HTTP status code to always be 200. The JSON response is wrapped in an 'envelope' containing the 'real' HTTP status code and headers.default(false)"/>
     <parameter name="pretty" description="if true Output pretty JSON.default(false)"/>
     <parameter name="meta" description="Loads data from the endpoints found in the 'meta' part of the response"/>
     <parameter name="fields" description="Return only the specified fields"/>
@@ -61,9 +62,18 @@
         </filter>
 
         <!--Optional Query Parameters-->
+        <property name="uri.var.http_envelope" expression="$func:http_envelope"/>
         <property name="uri.var.pretty" expression="$func:pretty" />
         <property name="uri.var.meta" expression="$func:meta" />
         <property name="uri.var.fields" expression="$func:fields" />
+
+        <filter
+                xpath="(not(get-property('uri.var.http_envelope') = '' or (not(boolean(get-property('uri.var.http_envelope'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'http_envelope=',get-property('uri.var.http_envelope'),'&amp;')" />
+            </then>
+        </filter>
 
         <filter
                 xpath="(not(get-property('uri.var.pretty') = '' or (not(boolean(get-property('uri.var.pretty'))))))">
@@ -224,6 +234,10 @@
                 <http method="POST" uri-template="{uri.var.wp_resource_uri}?{uri.var.queryParameters}" />
             </endpoint>
         </call>
+
+        <!-- Remove response's custom header information -->
+        <header name="X-Prefork" scope="transport" action="remove" />
+        <header name="X-hacker" scope="transport" action="remove" />
 
     </sequence>
 </template>

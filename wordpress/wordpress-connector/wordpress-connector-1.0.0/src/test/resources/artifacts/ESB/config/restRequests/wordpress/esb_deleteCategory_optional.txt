@@ -1,5 +1,6 @@
 {
 	"accessToken":"%s(accessToken)",
 	"domain":"%s(domain)",
-	"blog":"google.lk"
+	"category":"%s(categoryOptional)",
+	"http_envelope":"true"
 }

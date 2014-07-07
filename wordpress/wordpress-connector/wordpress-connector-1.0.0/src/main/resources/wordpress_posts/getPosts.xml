@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template xmlns="http://ws.apache.org/ns/synapse" name="getPosts">
 
+    <!--Mandatory Parameter-->
+    <parameter name="site" description="The site ID or The site domain to get posts"/>
+
     <!-- Optional Parameters -->
+    <parameter name="http_envelope" description="Set HTTP status code to always be 200. The JSON response is wrapped in an 'envelope' containing the 'real' HTTP status code and headers.default(false)"/>
+    <parameter name="pretty" description="if true Output pretty JSON.default(false)"/>
     <parameter name="meta" description="Loads data from the endpoints found in the 'meta' part of the response"/>
     <parameter name="fields" description="Return only the specified fields"/>
     <parameter name="number" description="Limit the total number of authors returned"/>
@@ -19,29 +24,49 @@
     <parameter name="author" description="Author's user ID" />
     <parameter name="search" description="Search query" />
     <parameter name="meta_key" description="Metadata key that the post should contain" />
-    <parameter name="meta_value" description="" />
+    <parameter name="meta_value" description="Metadata value that the post should contain. Will only be applied if a `meta_key` is also given" />
 
     <sequence>
+        <!--Mandatory Parameter-->
+        <property name="uri.var.site" expression="$func:site"/>
 
         <!-- Building the URL with the parameters for the API method -->
-        <property name="uri.var.meta" expression="$func:meta" scope="default" type="STRING"/>
-        <property name="uri.var.fields" expression="$func:fields" scope="default" type="STRING"/>
-        <property name="uri.var.number" expression="$func:number" scope="default" type="STRING"/>
-        <property name="uri.var.offset" expression="$func:offset" scope="default" type="STRING"/>
-        <property name="uri.var.page" expression="$func:page" scope="default" type="STRING"/>
-        <property name="uri.var.order" expression="$func:order" scope="default" type="STRING"/>
-        <property name="uri.var.order_by" expression="$func:order_by" scope="default" type="STRING"/>
-        <property name="uri.var.after" expression="$func:after" scope="default" type="STRING"/>
-        <property name="uri.var.before" expression="$func:before" scope="default" type="STRING"/>
-        <property name="uri.var.tag" expression="$func:tag" scope="default" type="STRING"/>
-        <property name="uri.var.category" expression="$func:category" scope="default" type="STRING"/>
-        <property name="uri.var.type" expression="$func:type" scope="default" type="STRING"/>
-        <property name="uri.var.status" expression="$func:status" scope="default" type="STRING"/>
-        <property name="uri.var.sticky" expression="$func:sticky" scope="default" type="STRING"/>
-        <property name="uri.var.author" expression="$func:author" scope="default" type="STRING"/>
-        <property name="uri.var.search" expression="$func:search" scope="default" type="STRING"/>
-        <property name="uri.var.meta_key" expression="$func:meta_key" scope="default" type="STRING"/>
-        <property name="uri.var.meta_value" expression="$func:meta_value" scope="default" type="STRING"/>
+        <property name="uri.var.http_envelope" expression="$func:http_envelope"/>
+        <property name="uri.var.pretty" expression="$func:pretty" />
+        <property name="uri.var.meta" expression="$func:meta" />
+        <property name="uri.var.fields" expression="$func:fields" />
+        <property name="uri.var.number" expression="$func:number" />
+        <property name="uri.var.offset" expression="$func:offset" />
+        <property name="uri.var.page" expression="$func:page" />
+        <property name="uri.var.order" expression="$func:order" />
+        <property name="uri.var.order_by" expression="$func:order_by" />
+        <property name="uri.var.after" expression="$func:after" />
+        <property name="uri.var.before" expression="$func:before" />
+        <property name="uri.var.tag" expression="$func:tag" />
+        <property name="uri.var.category" expression="$func:category" />
+        <property name="uri.var.type" expression="$func:type" />
+        <property name="uri.var.status" expression="$func:status" />
+        <property name="uri.var.sticky" expression="$func:sticky" />
+        <property name="uri.var.author" expression="$func:author" />
+        <property name="uri.var.search" expression="$func:search" />
+        <property name="uri.var.meta_key" expression="$func:meta_key" />
+        <property name="uri.var.meta_value" expression="$func:meta_value" />
+
+        <filter
+                xpath="(not(get-property('uri.var.http_envelope') = '' or (not(boolean(get-property('uri.var.http_envelope'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'http_envelope=',get-property('uri.var.http_envelope'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.pretty') = '' or (not(boolean(get-property('uri.var.pretty'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'pretty=',get-property('uri.var.pretty'),'&amp;')" />
+            </then>
+        </filter>
 
         <filter
                 xpath="(not(get-property('uri.var.meta') = '' or (not(string(get-property('uri.var.meta'))))))">
@@ -187,13 +212,17 @@
             </then>
         </filter>
 
-        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'),'/posts/')" scope="default" type="STRING"/>
+        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.site'),'/posts/')" />
 
         <call>
             <endpoint>
                 <http method="GET" uri-template="{uri.var.wp_resource_uri}?{uri.var.queryParameters}" />
             </endpoint>
         </call>
+
+        <!-- Remove response's custom header information -->
+        <header name="X-Prefork" scope="transport" action="remove" />
+        <header name="X-hacker" scope="transport" action="remove" />
 
     </sequence>
 </template>

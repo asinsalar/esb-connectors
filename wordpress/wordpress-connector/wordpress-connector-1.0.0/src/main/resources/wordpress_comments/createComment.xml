@@ -1,107 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template xmlns="http://ws.apache.org/ns/synapse" name="createComment">
 
-    <!--method parameters-->
-    <parameter name="postID"/>
+    <!--Mandatory Parameter-->
+    <parameter name="site" description="The site ID or The site domain to comment"/>
+    <parameter name="post_id" description="The post ID to comment"/>
+    <parameter name="content" description="The post content (html)"/>
 
-    <!--query parameters-->
-    <!--parameter name="context"/-->
-    <!--parameter name="http_envelope"/-->
-    <parameter name="pretty"/>
-    <parameter name="meta"/>
-    <parameter name="fields"/>
-    <!--parameter name="callback"/-->
-
-    <!--request parameter-->
-    <parameter name="content"/>
-
+    <!--Optional Query Parameters-->
+    <parameter name="http_envelope" description="Set HTTP status code to always be 200. The JSON response is wrapped in an 'envelope' containing the 'real' HTTP status code and headers.default(false)"/>
+    <parameter name="pretty" description="if true Output pretty JSON.default(false)"/>
+    <parameter name="meta" description="Loads data from the endpoints found in the 'meta' part of the response"/>
+    <parameter name="fields" description="Return only the specified fields"/>
 
     <sequence>
+        <!--Mandatory Parameter-->
+        <property name="uri.var.site" expression="$func:site" />
+        <property name="uri.var.post_id" expression="$func:post_id" />
+        <property name="uri.var.content" expression="$func:content" />
 
-        <property name="uri.var.postID" expression="$func:postID" scope="default" type="STRING"/>
+        <!--Optional Query Parameters-->
+        <property name="uri.var.http_envelope" expression="$func:http_envelope"/>
+        <property name="uri.var.pretty" expression="$func:pretty" />
+        <property name="uri.var.meta" expression="$func:meta" />
+        <property name="uri.var.fields" expression="$func:fields" />
 
-        <property name="uri.var.pretty" expression="$func:pretty" scope="default" type="BOOLEAN"/>
-        <property name="uri.var.meta" expression="$func:meta" scope="default" type="STRING"/>
-        <property name="uri.var.fields" expression="$func:fields" scope="default" type="STRING"/>
-
-        <property name="uri.var.content" expression="$func:content" scope="default" type="STRING"/>
-
-        <property name="uri.var.query" value="" scope="default" type="STRING"/>
-
-
-        <!--context-->
-        <!--filter
-                xpath="not(get-property('uri.var.context') = '') and string(get-property('uri.var.context'))">
-            <then>
-                <property name="uri.var.query"
-                          expression="concat(get-property('uri.var.query'), '&amp;context=',get-property('uri.var.context')) " />
-            </then>
-        </filter-->
-        <!--http_envelope-->
-        <!--filter
-                xpath="not(get-property('uri.var.http_envelope') = '') and boolean(get-property('uri.var.http_envelope'))">
-            <then>
-                <property name="uri.var.query"
-                          expression="concat(get-property('uri.var.query'), '&amp;http_envelope=',get-property('uri.var.http_envelope')) " />
-            </then>
-        </filter-->
-        <!--pretty-->
         <filter
-                xpath="not(get-property('uri.var.pretty') = '') and boolean(get-property('uri.var.pretty'))">
+                xpath="(not(get-property('uri.var.http_envelope') = '' or (not(boolean(get-property('uri.var.http_envelope'))))))">
             <then>
-                <property name="uri.var.query"
-                          expression="concat(get-property('uri.var.query'), '&amp;pretty=',get-property('uri.var.pretty')) " />
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'http_envelope=',get-property('uri.var.http_envelope'),'&amp;')" />
             </then>
         </filter>
-        <!--meta-->
-        <filter
-                xpath="not(get-property('uri.var.meta') = '') and string(get-property('uri.var.meta'))">
-            <then>
-                <property name="uri.var.query"
-                          expression="concat(get-property('uri.var.query'), '&amp;meta=',get-property('uri.var.meta')) " />
-            </then>
-        </filter>
-        <!--fields-->
-        <filter
-                xpath="not(get-property('uri.var.fields') = '') and string(get-property('uri.var.fields'))">
-            <then>
-                <property name="uri.var.query"
-                          expression="concat(get-property('uri.var.query'), '&amp;fields=',get-property('uri.var.fields')) " />
-            </then>
-        </filter>
-        <!--callback-->
-        <!--filter
-                xpath="not(get-property('uri.var.callback') = '') and string(get-property('uri.var.callback'))">
-            <then>
-                <property name="uri.var.query"
-                          expression="concat(get-property('uri.var.query'), '&amp;callback=',get-property('uri.var.callback')) " />
-            </then>
-        </filter-->
 
+        <filter
+                xpath="(not(get-property('uri.var.pretty') = '' or (not(boolean(get-property('uri.var.pretty'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'pretty=',get-property('uri.var.pretty'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.meta') = '' or (not(string(get-property('uri.var.meta'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'meta=',get-property('uri.var.meta'),'&amp;')" />
+            </then>
+        </filter>
+
+        <filter
+                xpath="(not(get-property('uri.var.fields') = '' or (not(string(get-property('uri.var.fields'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'fields=',get-property('uri.var.fields'),'&amp;')" />
+            </then>
+        </filter>
+
+        <!-- Building request with mandatory params -->
         <payloadFactory media-type="json">
             <format>
-                { }
+                {
+                "content": "$1"
+                }
             </format>
-            <args></args>
+            <args>
+                <arg expression="get-property('uri.var.content')" />
+            </args>
         </payloadFactory>
-        <script language="js"><![CDATA[
-                var content =mc.getProperty('uri.var.content');
 
-                payload = mc.getPayloadJSON();
-                if(content != null && content != "")
-                    payload.content = content;
 
-                mc.setPayloadJSON(payload);
-                ]]></script>
+        <property name="messageType" scope="axis2" value="application/x-www-form-urlencoded" />
 
-        <property name="messageType" scope="axis2" value="application/json" />
-        <property name="uri.var.wp_api_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'), '/posts/', get-property('uri.var.postID'), '/replies/new?', get-property('uri.var.query'))" scope="default" type="STRING"/>
-
+        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.site'),'/posts/', get-property('post_id'),'/replies/new' )" />
 
         <call>
             <endpoint>
-                <http method="POST" uri-template="{uri.var.wp_api_uri}" />
+                <http method="POST" uri-template="{uri.var.wp_resource_uri}?{uri.var.queryParameters}" />
             </endpoint>
         </call>
+
+        <!-- Remove response's custom header information -->
+        <header name="X-Prefork" scope="transport" action="remove" />
+        <header name="X-hacker" scope="transport" action="remove" />
+
     </sequence>
 </template>

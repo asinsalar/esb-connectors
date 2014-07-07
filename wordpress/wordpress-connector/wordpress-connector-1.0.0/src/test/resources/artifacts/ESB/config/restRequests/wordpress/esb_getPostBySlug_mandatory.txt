@@ -1,5 +1,5 @@
 {
 	"accessToken":"%s(accessToken)",
-	"domain":"%s(domain)",
-	"postSlug":"%s(postSlug)"
+	"site":"%s(domain)",
+	"post_slug":"%s(postSlug)"
 }

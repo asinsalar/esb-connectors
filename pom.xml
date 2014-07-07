@@ -28,9 +28,9 @@
     <name>Building wso2 CARBON connectors</name>
     <url>http://wso2.org</url>
     <modules>
-        <module>wordpress/wordpress-connector</module>
-        <module>integration-base</module>
-       <!-- <module>googledrive</module>
+         <!--<module>integration-base</module>-->
+         <module>wordpress/wordpress-connector</module>
+        <!--<module>googledrive</module>
 	<module>twitter/1.0.0</module>
  	<module>jira/1.0.0</module>
 	<module>salesforce/1.0.0</module>

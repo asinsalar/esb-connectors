@@ -1,7 +1,7 @@
 {
 	"accessToken":"%s(accessToken)",
-	"domain":"non-exist.wordpress.com",
-	"postID":"%s(postId)",
+	"site":"non-exist.wordpress.com",
+	"post_id":"%s(postId)",
 	"content":"negative comment series",
 	"meta":"self,post"
 }

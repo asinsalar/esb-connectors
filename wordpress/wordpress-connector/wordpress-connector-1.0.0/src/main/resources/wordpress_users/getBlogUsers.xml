@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template xmlns="http://ws.apache.org/ns/synapse" name="getBlogUsers">
 
-    <!--Optional Query Parameters-->
+    <!--Optional Parameters-->
+    <parameter name="http_envelope" description="Set HTTP status code to always be 200. The JSON response is wrapped in an 'envelope' containing the 'real' HTTP status code and headers.default(false)"/>
     <parameter name="pretty" description="if true Output pretty JSON.default(false)"/>
     <parameter name="meta" description="Loads data from the endpoints found in the 'meta' part of the response"/>
     <parameter name="fields" description="Return only the specified fields"/>
@@ -10,20 +11,31 @@
     <parameter name="order" description="DESC or ASC"/>
     <parameter name="order_by" description="The order field"/>
     <parameter name="authors_only" description="Set to true to fetch authors only"/>
+    <parameter name="type" description="Specify the post type to query authors for. Only works when combined with the `authors_only` flag"/>
 
     <sequence>
 
         <!--Optional Query Parameters-->
-        <property name="uri.var.pretty" expression="$func:pretty" type="STRING"/>
-        <property name="uri.var.meta" expression="$func:meta" type="STRING"/>
-        <property name="uri.var.fields" expression="$func:fields" type="STRING"/>
-        <property name="uri.var.number" expression="$func:number" type="STRING"/>
-        <property name="uri.var.offset" expression="$func:offset" type="STRING"/>
-        <property name="uri.var.order" expression="$func:order" type="STRING"/>
-        <property name="uri.var.order_by" expression="$func:order_by" type="STRING"/>
-        <property name="uri.var.authors_only" expression="$func:authors_only" type="STRING"/>
+        <property name="uri.var.http_envelope" expression="$func:http_envelope"/>
+        <property name="uri.var.pretty" expression="$func:pretty" />
+        <property name="uri.var.meta" expression="$func:meta" />
+        <property name="uri.var.fields" expression="$func:fields" />
+        <property name="uri.var.number" expression="$func:number" />
+        <property name="uri.var.offset" expression="$func:offset" />
+        <property name="uri.var.order" expression="$func:order" />
+        <property name="uri.var.order_by" expression="$func:order_by" />
+        <property name="uri.var.authors_only" expression="$func:authors_only" />
+        <property name="uri.var.type" expression="$func:type" />
 
         <!--Building the query with optional query parameters-->
+
+        <filter
+                xpath="(not(get-property('uri.var.http_envelope') = '' or (not(string(get-property('uri.var.http_envelope'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'http_envelope=',get-property('uri.var.http_envelope'),'&amp;')" />
+            </then>
+        </filter>
 
         <filter
                 xpath="(not(get-property('uri.var.pretty') = '' or (not(string(get-property('uri.var.pretty'))))))">
@@ -89,7 +101,15 @@
             </then>
         </filter>
 
-        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'),'/users')" type="STRING"/>
+        <filter
+                xpath="(not(get-property('uri.var.type') = '' or (not(string(get-property('uri.var.type'))))))">
+            <then>
+                <property name="uri.var.queryParameters"
+                          expression="fn:concat(get-property('uri.var.queryParameters'),'type=',get-property('uri.var.type'),'&amp;')" />
+            </then>
+        </filter>
+
+        <property name="uri.var.wp_resource_uri" expression="fn:concat('https://public-api.wordpress.com/rest/v1/sites/',get-property('uri.var.wp_site_domain'),'/users')" />
 
 
         <call>
@@ -97,6 +117,10 @@
                 <http method="GET" uri-template="{uri.var.wp_resource_uri}?{uri.var.queryParameters}" />
             </endpoint>
         </call>
+
+        <!-- Remove response's custom header information -->
+        <header name="X-Prefork" scope="transport" action="remove" />
+        <header name="X-hacker" scope="transport" action="remove" />
 
     </sequence>
 </template>
