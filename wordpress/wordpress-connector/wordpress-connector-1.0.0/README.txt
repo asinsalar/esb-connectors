@@ -24,13 +24,21 @@ STEPS:
    ii) Enable message builder for "text/html" in messageBuilders tag
 			<messageBuilder contentType="text/html" class="org.wso2.carbon.relay.BinaryRelayBuilder"/>
 
-   iii) Enable message formatter for "application/json" in messageFormatters tag
+   iii) Enable message formatter for "application/x-www-form-urlencoded" in messageFormatters tag
+                       <messageFormatter contentType="application/x-www-form-urlencoded"
+                          class="org.apache.axis2.transport.http.XFormURLEncodedFormatter"/>
+   
+   iV) Enable message builder for "application/x-www-form-urlencoded" in messageBuilders tag
+			<messageBuilder contentType="application/x-www-form-urlencoded"
+                        class="org.apache.synapse.commons.builders.XFormURLEncodedBuilder"/>
+
+   V) Enable message formatter for "application/json" in messageFormatters tag
 			<messageFormatter contentType="application/json" class="org.apache.synapse.commons.json.JsonStreamFormatter"/>
 
-   iv) Enable message builder for "application/json" in messageBuilders tag
+   Vi) Enable message builder for "application/json" in messageBuilders tag
 			<messageBuilder contentType="application/json" class="org.apache.synapse.commons.json.JsonStreamBuilder"/>
 
-   V) Install HTTP PATCH request enabling patch and Json patch to ESB 4.8.1
+   Vii) Install HTTP PATCH request enabling patch and Json patch to ESB 4.8.1
 		patch0804 - http PATCH request patch
 		patch0800 - Json string escape ("\") character patch
 
