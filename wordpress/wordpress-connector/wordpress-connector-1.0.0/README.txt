@@ -72,14 +72,13 @@ STEPS:
         </packages>
     </test>
 
-8. Create a Wordpress.com account and to obtain the access token go through following steps
+8. To obtain an access token go through the following steps,
+
 	i) Go to "https://wordpress.com/wp-login.php?" and create your wordpress account.
        ii) Using "https://developer.wordpress.com/apps/new/" create a wordpress app, once configured you will receive your CLIENT ID and 	    CLIENT SECRET to identify your app.
-      iii) To obtain the access token use the authorization endpoint "https://public-api.wordpress.com/oauth2/authorize?	     		   client_id=your_client_id&redirect_uri=your_url&response_type=code"
-           Server / Code Authentication The redirect to your application will include a "code" which you will need in the next step. 
-       iv) Now pass the code to the token endpoint by making a POST request to the token endpoint;
-	   "https://public-api.wordpress.com/oauth2/token"
-           For more detailed instructions refer : "https://developer.wordpress.com/docs/oauth2/". 	
+      iii) Derive the access token by following the instructions at "https://developer.wordpress.com/2014/07/04/authentication-improvements-for-testing-your-apps/".
+
+    NOTE - The method mentioned in step (iii) only available to the owner of the application, and not to any other user. This is meant for testing purposes only.To Obtain access tokens for other users/blogs with a single app follow the instructions at "https://developer.wordpress.com/docs/oauth2/".
 
 9. Copy the connector properties file at "Wordpress-connector-1.0.0/org.wso2.carbon.connector/src/test/resources/artifacts/ESB/connector/config/wordpress.properties" to "Integration_Test/products/esb/4.8.1/modules/integration/connectors/src/test/resources/artifacts/ESB/connector/config/" and update the copied file as below.
 	i) accessToken - use the access token you got from step 8
@@ -96,5 +95,7 @@ STEPS:
       $ mvn clean install
 
  NOTE : Following Wordpress account, can be used for run the integration tests.
-    Username :wso2wordpress@gmail.com	
-    password : connector1234
+    Username      : wso2esbconnector	
+    password      : connector1234
+    Client ID     : 35873
+    Client Secret : MBRlOmkHETtJ6Y5nAjRfkAl0LDDVZhWEvYH3SowLJf2QJ5ndcoV0udK9qffkIkNA 
