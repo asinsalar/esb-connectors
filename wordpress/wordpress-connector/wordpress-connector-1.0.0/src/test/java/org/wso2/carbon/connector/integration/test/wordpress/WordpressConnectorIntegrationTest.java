@@ -33,27 +33,27 @@ import org.wso2.connector.integration.test.base.RestResponse;
  * Integration test class for Wordpress connector.
  */
 public class WordpressConnectorIntegrationTest extends ConnectorIntegrationTestBase {
-    
+
     private Map<String, String> esbRequestHeadersMap = new HashMap<String, String>();
-    
+
     private Map<String, String> apiRequestHeadersMap = new HashMap<String, String>();
-    
+
     private Map<String, String> parametersMap = new HashMap<String, String>();
-    
+
     /**
      * Set up the environment.
      */
     @BeforeClass(alwaysRun = true)
     public void setEnvironment() throws Exception {
-        
+
         init("wordpress-connector-1.0.0");
-        
+
         esbRequestHeadersMap.put("Accept-Charset", "UTF-8");
         esbRequestHeadersMap.put("Content-Type", "application/json");
-        
+
         apiRequestHeadersMap.putAll(esbRequestHeadersMap);
         apiRequestHeadersMap.put("Authorization", "Bearer " + connectorProperties.getProperty("accessToken"));
-        
+
     }
 
     /**
@@ -230,10 +230,10 @@ public class WordpressConnectorIntegrationTest extends ConnectorIntegrationTestB
 
     }
 
-   /**
-    * Positive test case for createComment with mandatory parameters.
-    *
-    */
+    /**
+     * Positive test case for createComment with mandatory parameters.
+     *
+     */
     @Test(dependsOnMethods = {"testCreatePostWithMandatoryParameters"}, groups = { "wso2.esb" }, description = "wordpress {createComment} integration test with mandatory parameters.")
     public void testCreateCommentWithMandatoryParameters() throws Exception {
 
@@ -1131,7 +1131,7 @@ public class WordpressConnectorIntegrationTest extends ConnectorIntegrationTestB
         Assert.assertEquals(esbRestResponse.getHttpStatusCode(), 404);
         Assert.assertEquals(esbRestResponse.getBody().get("error"), apiRestResponse.getBody().get("error"));
         Assert.assertEquals(esbRestResponse.getBody().get("message"), apiRestResponse.getBody().get("message"));
-  }
+    }
 
     /**
      * Positive test case for subscribeTag with mandatory parameters.
@@ -1331,9 +1331,9 @@ public class WordpressConnectorIntegrationTest extends ConnectorIntegrationTestB
         Assert.assertEquals(esbRestResponse.getBody().get("message"), apiRestResponse.getBody().get("message"));
 
     }
-     /**
-      * Positive test case for getFollowingBlogPosts with mandatory parameters.
-      */
+    /**
+     * Positive test case for getFollowingBlogPosts with mandatory parameters.
+     */
     @Test(groups = {"wso2.esb"}, description = "wordpress {getFollowingBlogPosts} integration test with mandatory parameters.")
     public void testGetFollowingBlogPostsWithMandatoryParameters() throws Exception{
         esbRequestHeadersMap.put("Action","urn:getFollowingBlogPosts");
@@ -1820,10 +1820,10 @@ public class WordpressConnectorIntegrationTest extends ConnectorIntegrationTestB
         Assert.assertEquals(esbRestResponse.getBody().get("error"),apiRestResponse.getBody().get("error"));
     }
 
-   /**
-    * Positive test case for deletePost with mandatory parameters.
-    *
-    */
+    /**
+     * Positive test case for deletePost with mandatory parameters.
+     *
+     */
     @Test(priority = 10,groups = {"wso2.esb"}, description = "wordpress {deletePost} integration test with mandatory parameters.")
     public void testDeletePostWithMandatoryParameters() throws Exception{
         esbRequestHeadersMap.put("Action","urn:deletePost");
